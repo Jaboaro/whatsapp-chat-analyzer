@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-from parser.whatsapp_parser import parse_chat_file
+from parser.whatsapp_parser import parse_chat_file as _parse_chat_file
 from analysis.time_analysis import daily_activity_with_trend
 from analysis.user_analysis import messages_per_user, messages_per_day_by_user
 from analysis.weekly_analysis import (
@@ -11,6 +11,11 @@ from analysis.weekly_analysis import (
     messages_by_hour,
     weekday_hour_matrix,
 )
+
+# ---------------------------------------------------
+# Add cache to parser
+# ---------------------------------------------------
+parse_chat_file = st.cache_data(show_spinner=False)(_parse_chat_file)
 
 # --------------------------------------------------
 # Page configuration
@@ -92,14 +97,18 @@ uploaded_file = st.file_uploader("Upload a WhatsApp .txt export", type=["txt"])
 
 if uploaded_file is None:
     st.info("Please upload a WhatsApp chat file to begin.")
+    st.cache_data.clear()
     st.stop()
+
 
 # --------------------------------------------------
 # Parsing
 # --------------------------------------------------
 
+
 with st.spinner("Parsing chat..."):
     df, stats = parse_chat_file(uploaded_file)
+
 
 if df.empty:
     st.error("No messages could be parsed from this file.")
