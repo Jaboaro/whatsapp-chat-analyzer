@@ -1,5 +1,16 @@
+"""
+User-based analysis of WhatsApp messages.
+
+Provides functions to:
+- Count messages per user
+- Analyze daily activity per user
+- Compute user participation shares
+- Count media-related messages per user
+"""
+
 import pandas as pd
 from typing import Optional
+from collections.abc import Mapping, Sequence
 
 
 def messages_per_user(df: pd.DataFrame) -> pd.DataFrame:
@@ -103,3 +114,46 @@ def user_share(df: pd.DataFrame) -> pd.DataFrame:
     result["percentage"] = 100 * result["message_count"] / total
 
     return result
+
+
+# --------------------------------------------------
+# Media usage by user
+# --------------------------------------------------
+
+
+def media_counts_by_user(
+    df: pd.DataFrame,
+    media_patterns: Mapping[str, Sequence[str]],
+    message_col: str = "message",
+    user_col: str = "sender",
+) -> pd.DataFrame:
+    """
+    Count media messages (images, stickers, etc.) per user.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Parsed WhatsApp messages.
+    media_patterns : dict
+        Dict like { "Images": ["image omitted", ...], ... }
+    message_col : str
+        Column containing message text.
+    user_col : str
+        Column containing sender names.
+
+    Returns
+    -------
+    pd.DataFrame
+        Index: sender
+        Columns: media types
+    """
+    messages = df[message_col].str.lower()
+
+    result = pd.DataFrame(index=df[user_col].unique())
+
+    for media_type, patterns in media_patterns.items():
+        mask = messages.apply(lambda msg: any(p in msg for p in patterns))
+        counts = df[mask].groupby(user_col).size()
+        result[media_type] = counts
+
+    return result.fillna(0).astype(int)

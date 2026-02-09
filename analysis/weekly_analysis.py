@@ -1,4 +1,11 @@
-import pandas as pd
+"""
+Weekly and hourly analysis of WhatsApp messages.
+
+Provides functions to:
+- Aggregate messages by weekday
+- Aggregate messages by hour of day
+- Build a weekday x hour matrix suitable for heatmaps
+"""
 
 import pandas as pd
 

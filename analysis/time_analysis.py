@@ -1,3 +1,12 @@
+"""
+Temporal analysis of WhatsApp messages.
+
+Provides functions to:
+- Aggregate messages per day
+- Compute rolling averages
+- Combine aggregation and smoothing in a convenience pipeline
+"""
+
 import pandas as pd
 from typing import Optional
 
