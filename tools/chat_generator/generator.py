@@ -77,7 +77,7 @@ def generate_chat(
 
     for day_offset in range(days):
         day = start_date + timedelta(days=day_offset)
-        num_messages = messages_per_day(avg_messages_per_day)
+        num_messages = messages_per_day(avg_messages_per_day, 0.8)
 
         if num_messages == 0:
             continue
