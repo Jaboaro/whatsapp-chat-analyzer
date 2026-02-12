@@ -8,10 +8,13 @@ This module is responsible for:
 - Stopping execution gracefully when no valid data is available
 """
 
+from pathlib import Path
 import pandas as pd
 import streamlit as st
 
 from parser.io import parse_chat_file as _parse_chat_file
+
+SAMPLE_CHAT_PATH = Path(r".\data\sample_chats\sample_chat_es.txt")
 
 
 @st.cache_data(show_spinner=False)
@@ -42,6 +45,7 @@ def parse_chat_file(uploaded_file):
 def load_chat() -> pd.DataFrame:
     """
     Handle WhatsApp chat upload and parsing lifecycle.
+    Load a WhatsApp chat either from user upload or from a bundled sample.
 
     This function:
     - Prompts the user to upload a `.txt` WhatsApp export
@@ -61,13 +65,35 @@ def load_chat() -> pd.DataFrame:
     """
     uploaded_file = st.file_uploader("Upload a WhatsApp .txt export", type=["txt"])
 
-    if uploaded_file is None:
+    col1, _ = st.columns([1, 2])
+    with col1:
+        if st.button("Try sample chat"):
+            st.session_state["chat_source"] = "sample"
+
+    # Uploaded file takes precedence
+    if uploaded_file is not None:
+        st.session_state["chat_source"] = "upload"
+
+    chat_source = st.session_state.get("chat_source")
+
+    if chat_source is None:
         st.info("Please upload a WhatsApp chat file to begin.")
         st.cache_data.clear()
         st.stop()
 
+    match chat_source:
+        case "sample":
+            file_obj = SAMPLE_CHAT_PATH.open("rb")
+            st.info("Loaded a synthetic sample chat (no real data).")
+
+        case "upload":
+            file_obj = uploaded_file
+
+        case _:
+            st.stop()  # defensive, should never happen
+
     with st.spinner("Parsing chat..."):
-        df, metadata = parse_chat_file(uploaded_file)
+        df, metadata = parse_chat_file(file_obj)
 
     if df.empty:
         st.error("No messages could be parsed from this file.")

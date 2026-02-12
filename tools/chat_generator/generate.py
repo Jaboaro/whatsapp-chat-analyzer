@@ -15,6 +15,9 @@ PROFILES: dict[str, ExportProfile] = {
 
 
 def parse_args() -> argparse.Namespace:
+    """
+    Parse command-line arguments for the chat generator CLI.
+    """
     parser = argparse.ArgumentParser(
         description="Generate a synthetic WhatsApp chat export"
     )
@@ -30,7 +33,7 @@ def parse_args() -> argparse.Namespace:
         "--users",
         nargs="+",
         required=True,
-        help="List of chat participants",
+        help="List of chat participants (minimum 2)",
     )
 
     parser.add_argument(
@@ -71,11 +74,22 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """
+    Entry point for the chat generator CLI.
+    """
     args = parse_args()
 
-    profile = PROFILES[args.profile]
+    # Validate number of users
+    if len(args.users) < 2:
+        raise SystemExit("You must provide at least two users.")
 
-    start_date = datetime.strptime(args.start_date, "%Y-%m-%d")
+    # Validate and parse start date
+    try:
+        start_date = datetime.strptime(args.start_date, "%Y-%m-%d")
+    except ValueError:
+        raise SystemExit("Invalid --start-date format. Use YYYY-MM-DD.")
+
+    profile: ExportProfile = PROFILES[args.profile]
 
     chat_text = generate_chat(
         users=args.users,
@@ -86,10 +100,20 @@ def main() -> None:
         seed=args.seed,
     )
 
+    # Ensure output directory exists
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(chat_text, encoding="utf-8")
 
-    print(f"Chat generated at: {args.output}")
+    # CLI summary output
+    print("\nChat successfully generated")
+    print("-" * 40)
+    print(f"Users: {', '.join(args.users)}")
+    print(f"Days: {args.days}")
+    print(f"Average messages/day: {args.avg_messages_per_day}")
+    print(f"Profile: {args.profile}")
+    print(f"Seed: {args.seed}")
+    print(f"Output: {args.output}")
+    print("-" * 40)
 
 
 if __name__ == "__main__":
