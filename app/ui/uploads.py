@@ -13,8 +13,10 @@ import pandas as pd
 import streamlit as st
 
 from parser.io import parse_chat_file as _parse_chat_file
+from config.config import is_cloud
 
 SAMPLE_CHAT_PATH = Path(r".\data\sample_chats\sample_chat_es.txt")
+DEMO_MODE = is_cloud()
 
 
 @st.cache_data(show_spinner=False)
@@ -66,7 +68,12 @@ def load_chat() -> pd.DataFrame:
     if "chat_source" not in st.session_state:
         st.session_state["chat_source"] = None
 
-    uploaded_file = st.file_uploader("Upload a WhatsApp .txt export", type=["txt"])
+    uploaded_file = st.file_uploader(
+        "Upload a WhatsApp .txt export",
+        type=["txt"],
+        disabled=DEMO_MODE,
+        help="Disabled in demo mode (Streamlit Cloud deployment).",
+    )
 
     col1, _ = st.columns([1, 2])
     with col1:

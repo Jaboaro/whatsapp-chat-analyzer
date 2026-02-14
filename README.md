@@ -5,9 +5,19 @@ A data-driven WhatsApp chat analysis tool built with **Python + Streamlit**, des
 
 ![App screenshot](media/images/image1.png)
 
+It parses exported `.txt` conversations and generates structured insights about:
+- Participation patterns
+- Message distribution over time
+- Media usage
+- Activity heatmaps
+- Conversation dynamics
 
 ## Quick Try
+**Live Demo (Sample Chat Only)**  
+[Streamlit Cloud Link Here]
 
+The online version only allows using a built-in sample chat.  
+No personal data can be uploaded.
 You can try the app locally in a few steps. **All data remains on your PC** — nothing is uploaded.
 
 ```bash
