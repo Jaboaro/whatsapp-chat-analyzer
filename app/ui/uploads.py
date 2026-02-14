@@ -15,7 +15,10 @@ import streamlit as st
 from parser.io import parse_chat_file as _parse_chat_file
 from config.config import is_cloud
 
-SAMPLE_CHAT_PATH = Path(r".\data\sample_chats\sample_chat_es.txt")
+BASE_DIR = Path(__file__).resolve().parent.parent
+SAMPLE_CHAT_PATH = BASE_DIR / Path("data/sample_chats/sample_chat_es.txt")
+
+
 DEMO_MODE = is_cloud()
 
 

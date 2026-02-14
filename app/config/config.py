@@ -1,5 +1,5 @@
-import os
+import streamlit as st
 
 
 def is_cloud() -> bool:
-    return os.getenv("STREAMLIT_SHARING_MODE") is not None
+    return st.secrets.get("IS_CLOUD", False)
