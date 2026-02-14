@@ -29,10 +29,7 @@ def parse_chat_file(uploaded_file):
 # Page configuration
 # --------------------------------------------------
 st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide")
-with st.expander("How to export your WhatsApp chats"):
-    from config.config import is_cloud
 
-    st.markdown(is_cloud())
 # --------------------------------------------------
 # Main Page
 # --------------------------------------------------

@@ -78,7 +78,7 @@ def load_chat() -> pd.DataFrame:
         help="Disabled in demo mode (Streamlit Cloud deployment).",
     )
     if DEMO_MODE:
-        st.info("Running in demo mode (Streamlit Cloud).")
+        st.info("Parse your own chats is disabled in Streamlit Cloud.")
         uploaded_file = None
     col1, _ = st.columns([1, 2])
     with col1:
