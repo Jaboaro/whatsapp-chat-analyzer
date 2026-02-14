@@ -4,8 +4,10 @@ A data-driven WhatsApp chat analysis tool built with **Python + Streamlit**, des
 
 This project focuses on transforming raw chat exports into meaningful visual analytics — message distribution, participation dynamics, media usage patterns, and conversational structure.
 
+![App screenshot](image1.png)
+## 🚀 Video demo
 
-## 🚀 Live Application
+![Video demo](media/videos/video1.gif)
 
 *(Add deployment link here if available)*
 

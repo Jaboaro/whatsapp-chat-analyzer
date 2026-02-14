@@ -63,6 +63,9 @@ def load_chat() -> pd.DataFrame:
     - Calls `st.stop()` if no file is uploaded
     - Calls `st.stop()` if parsing produces an empty dataframe
     """
+    if "chat_source" not in st.session_state:
+        st.session_state["chat_source"] = None
+
     uploaded_file = st.file_uploader("Upload a WhatsApp .txt export", type=["txt"])
 
     col1, _ = st.columns([1, 2])
@@ -73,12 +76,9 @@ def load_chat() -> pd.DataFrame:
     # Uploaded file takes precedence
     if uploaded_file is not None:
         st.session_state["chat_source"] = "upload"
-    else:
-        st.session_state["chat_source"] = (
-            None
-            if st.session_state["chat_source"] == "upload"
-            else st.session_state["chat_source"]
-        )
+    elif st.session_state["chat_source"] == "upload":
+        # File was removed → reset
+        st.session_state["chat_source"] = None
     chat_source = st.session_state.get("chat_source")
 
     if chat_source is None:

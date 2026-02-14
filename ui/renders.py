@@ -174,7 +174,7 @@ def render_temporal_activity(
         the rolling mean line.
     """
     if df.empty:
-        st.info("No messages to display for the selected range.")
+        st.info("No messages to display for the selected filters.")
         return
 
     daily_df = daily_activity_with_trend(df, window_days=window_days)
