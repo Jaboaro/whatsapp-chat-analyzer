@@ -49,15 +49,14 @@ class ExportProfile:
 
 EN_PROFILE = ExportProfile(
     locale="en",
-    datetime_format="%m/%d/%y, %H:%M:%S",
-    line_separator=" - ",
+    datetime_format="[%m/%d/%y, %H:%M:%S]",
+    line_separator=" ",
     sender_message_separator=": ",
     media_messages={
-        "image": "<Image omitted>",
-        "video": "<Video omitted>",
-        "audio": "<Audio omitted>",
-        "sticker": "<Sticker omitted>",
-        "gif": "<GIF omitted>",
+        "image": "image omitted",
+        "video": "video omitted",
+        "audio": "audio omitted",
+        "sticker": "sticker omitted",
     },
 )
 
@@ -71,7 +70,6 @@ ES_PROFILE = ExportProfile(
         "video": "video omitido",
         "audio": "audio omitido",
         "sticker": "sticker omitido",
-        "gif": "GIF omitido",
     },
 )
 
@@ -148,5 +146,5 @@ if __name__ == "__main__":
     from datetime import datetime
 
     dt = datetime(2023, 1, 12, 18, 42)
-    line = ES_PROFILE.format_line(dt, "Alice", "Hello")
+    line = EN_PROFILE.format_line(dt, "Alice", "Hello")
     print(line)
