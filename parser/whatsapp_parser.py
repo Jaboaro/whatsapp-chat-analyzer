@@ -22,6 +22,7 @@ from typing import Iterable, List, Optional, Tuple, Dict, TypedDict
 from datetime import datetime
 import pandas as pd
 
+from .import_config import ChatImportConfig
 
 # --------------------------------------------------
 # Regex patterns
@@ -74,6 +75,43 @@ def clean_line(line: str) -> str:
         .replace("\u200f", "")
         .rstrip("\n")
     )
+
+
+def infer_date_format(blocks: List[str], sample_size: int = 50) -> str:
+    """
+    Infer whether dates are in DD/MM/YY or MM/DD/YY format.
+
+    Strategy:
+    - Extract first N FULL_PATTERN date strings
+    - Attempt parsing with both formats
+    - Choose format with more valid parses
+    """
+
+    candidates: List[str] = []
+
+    for block in blocks[:sample_size]:
+        m = FULL_PATTERN.match(block)
+        if m:
+            date_str = m.group(1)
+            candidates.append(date_str)
+
+    if not candidates:
+        return "%d/%m/%y"  # Safe default
+
+    def score(fmt: str) -> int:
+        valid = 0
+        for d in candidates:
+            try:
+                datetime.strptime(d, fmt)
+                valid += 1
+            except ValueError:
+                pass
+        return valid
+
+    ddmm_score = score("%d/%m/%y")
+    mmdd_score = score("%m/%d/%y")
+
+    return "%d/%m/%y" if ddmm_score >= mmdd_score else "%m/%d/%y"
 
 
 # --------------------------------------------------
@@ -131,6 +169,7 @@ def segment_messages(lines: Iterable[str]) -> Tuple[List[str], Dict[str, int]]:
 def parse_message_block(
     block: str,
     last_datetime: Optional[datetime],
+    date_format: str,
     detect_quoted: bool = True,
 ) -> Tuple[Optional[ParsedMessage], Optional[datetime], Tuple[int, int], bool]:
     """
@@ -166,7 +205,7 @@ def parse_message_block(
 
     if m_full:
         date, hour, sender, message = m_full.groups()
-        dt = datetime.strptime(f"{date} {hour}", "%d/%m/%y %H:%M:%S")
+        dt = datetime.strptime(f"{date} {hour}", f"{date_format} %H:%M:%S")
 
         return (
             {
@@ -185,8 +224,10 @@ def parse_message_block(
         day_month, hour, sender, message = m_short.groups()
         day, month = day_month.split("/")
         year = last_datetime.year
+        short_format = date_format.replace("%y", "%Y")
         dt = datetime.strptime(
-            f"{day.zfill(2)}/{month.zfill(2)}/{year} {hour}:00", "%d/%m/%Y %H:%M:%S"
+            f"{day.zfill(2)}/{month.zfill(2)}/{year} {hour}:00",
+            f"{short_format} %H:%M:%S",
         )
 
         # Quoted message heuristic: timestamp goes backward
@@ -226,7 +267,9 @@ def parse_message_block(
 
 
 def parse_chat(
-    lines: Iterable[str], detect_quoted: bool = True
+    lines: Iterable[str],
+    detect_quoted: bool = True,
+    import_config: Optional[ChatImportConfig] = None,
 ) -> Tuple[pd.DataFrame, Dict[str, int]]:
     """
     Parse a WhatsApp chat from an iterable of strings (chat.txt format).
@@ -249,6 +292,11 @@ def parse_chat(
 
     blocks, segment_stats = segment_messages(lines)
 
+    if import_config and import_config.date_format:
+        date_format = import_config.date_format
+    else:
+        date_format = infer_date_format(blocks)
+
     data: List[ParsedMessage] = []
     last_datetime: Optional[datetime] = None
 
@@ -263,9 +311,14 @@ def parse_chat(
 
     first_quote = True
     for block in blocks:
+
         parsed, last_datetime, block_stats, is_quote = parse_message_block(
-            block, last_datetime, detect_quoted=detect_quoted
+            block,
+            last_datetime,
+            date_format=date_format,
+            detect_quoted=detect_quoted,
         )
+
         if parsed is not None:
             if is_quote:
                 data[-1]["message"] += (

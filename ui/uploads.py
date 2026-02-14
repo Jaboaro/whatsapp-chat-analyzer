@@ -73,7 +73,12 @@ def load_chat() -> pd.DataFrame:
     # Uploaded file takes precedence
     if uploaded_file is not None:
         st.session_state["chat_source"] = "upload"
-
+    else:
+        st.session_state["chat_source"] = (
+            None
+            if st.session_state["chat_source"] == "upload"
+            else st.session_state["chat_source"]
+        )
     chat_source = st.session_state.get("chat_source")
 
     if chat_source is None:
