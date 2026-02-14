@@ -4,13 +4,12 @@ A data-driven WhatsApp chat analysis tool built with **Python + Streamlit**, des
 
 This project focuses on transforming raw chat exports into meaningful visual analytics — message distribution, participation dynamics, media usage patterns, and conversational structure.
 
----
 
 ## 🚀 Live Application
 
 *(Add deployment link here if available)*
 
----
+
 
 ## 🎯 Project Goals
 
@@ -23,7 +22,7 @@ This project focuses on transforming raw chat exports into meaningful visual ana
 
 This is not a toy dashboard — it is built with clean architecture and extensibility in mind.
 
----
+
 
 ## 🧠 Core Features
 
@@ -52,7 +51,7 @@ This is not a toy dashboard — it is built with clean architecture and extensib
 * Seed-based simulation
 * Heterogeneous user behavior modeling
 
----
+
 
 ## 🏗 Architecture Overview
 
@@ -76,7 +75,7 @@ tools/
 * Clean data flow: raw → parsed → structured → analyzed → visualized
 * UI is thin, logic is reusable
 
----
+
 
 ## 🧪 Synthetic Chat Generator (Auxiliary Tool)
 
@@ -115,7 +114,7 @@ Each participant is assigned a behavior profile:
 
 This removes uniform bias and produces realistic insight distributions.
 
----
+
 
 ## 📦 Installation
 
@@ -131,7 +130,6 @@ Run the app:
 streamlit run app/streamlit_app.py
 ```
 
----
 
 ## 📌 Supported Export Formats
 
@@ -163,7 +161,7 @@ The synthetic chat generator is intentionally isolated under `tools/`.
 The main application must work with *real exported chats*.  
 The generator only exists to support testing and demonstrations.
 
----
+
 
 ## 2️⃣ ExportProfile Abstraction
 
@@ -187,7 +185,7 @@ This allows:
 -   Zero conditional logic in the parsing core
     
 
----
+
 
 ## 3️⃣ Deterministic Randomness
 
@@ -207,7 +205,6 @@ This enables:
 Non-deterministic tools are difficult to test.  
 This system avoids that problem by design.
 
----
 
 ## 4️⃣ Heterogeneous Behavioral Modeling
 
@@ -224,7 +221,7 @@ Each synthetic participant is assigned a behavioral profile:
 
 This produces realistic non-uniform distributions that generate meaningful insights in the visualization layer.
 
----
+
 
 ## 5️⃣ Thin UI Philosophy
 
@@ -239,7 +236,7 @@ The Streamlit layer is intentionally thin.
 
 This keeps the app maintainable and testable.
 
----
+
 
 # 🏗 Architecture Deep Dive
 
@@ -265,7 +262,6 @@ Streamlit UI
 
 Each layer has a single responsibility.
 
----
 
 ## 📥 Parsing Layer
 
@@ -307,7 +303,6 @@ After parsing, the chat is represented as structured tabular data:
 
 This normalized representation becomes the foundation for all analytics.
 
----
 
 ## 📈 Analysis Layer
 
@@ -333,7 +328,7 @@ The analysis layer is:
 -   Testable independently
     
 
----
+
 
 ## 📊 Visualization Layer
 
@@ -348,7 +343,7 @@ Visualization functions:
 
 This ensures charts are declarative, not computational.
 
----
+
 
 ## 🧠 Why This Architecture Matters
 
@@ -376,7 +371,7 @@ Instead, it demonstrates:
 -   Extensibility for future analytical features
     
 
----
+
 
 # 🎯 Resulting Engineering Properties
 
@@ -397,7 +392,7 @@ Instead, it demonstrates:
 * Conversation topic modeling
 * Multi-chat comparative analytics
 
----
+
 # ⚖ Limitations & Tradeoffs
 
 ## 1️⃣ WhatsApp Export Dependency
@@ -415,7 +410,6 @@ If WhatsApp changes its export formatting, parsing rules must be updated.
 
 The `ExportProfile` abstraction mitigates this risk by isolating format-specific logic.
 
----
 
 ## 2️⃣ No Direct Message Metadata
 
@@ -434,7 +428,7 @@ This limits the ability to perform deeper interaction modeling.
 
 The analysis is constrained to available textual data.
 
----
+
 
 ## 3️⃣ Synthetic Generator Simplifications
 
@@ -462,7 +456,6 @@ However, it does not simulate:
 
 The goal is analytical realism, not linguistic realism.
 
----
 
 ## 4️⃣ Time Modeling Assumptions
 
@@ -479,7 +472,7 @@ This approximates real-world behavior but does not replicate:
 
 These could be introduced in future iterations.
 
----
+
 
 ## 5️⃣ Streamlit as UI Layer
 
@@ -496,7 +489,7 @@ Tradeoff:
 
 For a production-scale analytics platform, a decoupled frontend might be preferable.
 
----
+
 
 ## 6️⃣ Single-Chat Scope
 
@@ -513,7 +506,7 @@ Future directions could include:
 
 The architecture supports extension, but it is intentionally scoped.
 
----
+
 
 # 🧠 Why Document Limitations?
 
@@ -531,12 +524,12 @@ Explicitly documenting tradeoffs demonstrates:
 No system is perfect.  
 Strong systems are explicit about their constraints.
 
----
+
 ## 📄 License
 
 MIT License
 
----
+
 
 ## 👨‍💻 Author
 
@@ -548,6 +541,6 @@ Built as a portfolio project to demonstrate:
 * Data analysis pipelines
 * Streamlit-based visualization apps
 
----
+
 
 If you found this project interesting, feel free to reach out.
