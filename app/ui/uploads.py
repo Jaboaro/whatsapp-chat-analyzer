@@ -160,6 +160,9 @@ def load_chat() -> pd.DataFrame:
 
     with st.spinner("Parsing chat..."):
         df, metadata = parse_chat_file(file_obj)
+        if chat_source == "demo_generated":
+            # Clean up in-memory file after parsing
+            file_obj.seek(0)
 
     if df.empty:
         st.error("No messages could be parsed from this file.")
