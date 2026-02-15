@@ -11,16 +11,25 @@ This module is responsible for:
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+from io import BytesIO
+import random
 
 from parser.io import parse_chat_file as _parse_chat_file
 from config.config import is_cloud
 from ui.content import CLOUD_DISABLED_WARNING
+from tools.chat_generator.profiles import ES_PROFILE
+
+# Optional: import generator only if available
+try:
+    from tools.chat_generator.generator import generate_chat
+except ImportError:
+    generate_chat = None
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SAMPLE_CHAT_PATH = BASE_DIR / Path("data/sample_chats/sample_chat_es.txt")
 
 
-DEMO_MODE = is_cloud()
+DEMO_MODE = True
 
 
 @st.cache_data(show_spinner=False)
@@ -46,6 +55,29 @@ def parse_chat_file(uploaded_file):
         - Optional metadata extracted during parsing
     """
     return _parse_chat_file(uploaded_file)
+
+
+def _generate_sample_chat_bytes() -> BytesIO:
+    """
+    Generate a synthetic chat in memory and return it as BytesIO.
+    """
+
+    if generate_chat is None:
+        # Fallback to static sample if generator missing
+        return BytesIO(SAMPLE_CHAT_PATH.read_bytes())
+    num_users = random.randint(2, 6)
+    users = random.sample(
+        ["Alice", "Bob", "Charlie", "David", "Eve", "Frank"], num_users
+    )
+    chat_text = generate_chat(
+        users=users,
+        start_date=pd.Timestamp("2024-01-01"),
+        days=random.randint(30, 365),
+        avg_messages_per_day=random.randint(100, 300),
+        export_profile=ES_PROFILE,
+    )
+
+    return BytesIO(chat_text.encode("utf-8"))
 
 
 def load_chat() -> pd.DataFrame:
@@ -85,17 +117,25 @@ def load_chat() -> pd.DataFrame:
         # Defensive: if we're in demo mode, ignore any uploaded file and force sample chat
         uploaded_file = None
 
-    col1, _ = st.columns([1, 2])
+    col1, col2 = st.columns([1, 7])
+
     with col1:
-        if st.button("Try sample chat"):
+        if st.button("Try default sample chat"):
             st.session_state["chat_source"] = "sample"
+
+    with col2:
+        if st.button("Generate new sample chat"):
+            st.session_state["chat_source"] = "demo_generated"
+            st.session_state["demo_chat_bytes"] = _generate_sample_chat_bytes()
 
     # Uploaded file takes precedence
     if uploaded_file is not None:
         st.session_state["chat_source"] = "upload"
+
     elif st.session_state["chat_source"] == "upload":
         # File was removed → reset
         st.session_state["chat_source"] = None
+
     chat_source = st.session_state.get("chat_source")
 
     if chat_source is None:
@@ -110,6 +150,10 @@ def load_chat() -> pd.DataFrame:
 
         case "upload":
             file_obj = uploaded_file
+
+        case "demo_generated":
+            file_obj = st.session_state.get("demo_chat_bytes")
+            st.info("Generated synthetic sample chat (dynamic demo).")
 
         case _:
             st.stop()  # defensive, should never happen
