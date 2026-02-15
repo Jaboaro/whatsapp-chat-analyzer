@@ -1,3 +1,17 @@
+import sys
+from pathlib import Path
+
+# -------------------------
+# Ensure project root is in sys.path
+# -------------------------
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+# -------------------------
+# Standard imports
+# -------------------------
+
 import streamlit as st
 
 from config.constants import MEDIA_PATTERNS
