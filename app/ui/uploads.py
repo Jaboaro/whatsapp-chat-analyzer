@@ -117,7 +117,7 @@ def load_chat() -> pd.DataFrame:
         # Defensive: if we're in demo mode, ignore any uploaded file and force sample chat
         uploaded_file = None
 
-    col1, col2 = st.columns([1, 7])
+    col1, col2 = st.columns([1, 6])
 
     with col1:
         if st.button("Try default sample chat"):
