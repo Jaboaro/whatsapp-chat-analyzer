@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SAMPLE_CHAT_PATH = BASE_DIR / Path("data/sample_chats/sample_chat_es.txt")
 
 
-DEMO_MODE = True
+DEMO_MODE = is_cloud()
 
 
 @st.cache_data(show_spinner=False)
