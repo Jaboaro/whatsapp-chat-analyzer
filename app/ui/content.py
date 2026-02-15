@@ -25,3 +25,5 @@ This is a portfolio project focused on:
 
 Source code and documentation will be available on GitHub.
 """
+
+CLOUD_DISABLED_WARNING = "Chat upload is disabled in the Cloud version.\nWhatsApp chats may contain sensitive information involving third parties, so they are not sent to external servers. Please use the local version on GitHub for full functionality."

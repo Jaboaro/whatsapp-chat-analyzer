@@ -14,6 +14,7 @@ import streamlit as st
 
 from parser.io import parse_chat_file as _parse_chat_file
 from config.config import is_cloud
+from ui.content import CLOUD_DISABLED_WARNING
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SAMPLE_CHAT_PATH = BASE_DIR / Path("data/sample_chats/sample_chat_es.txt")
@@ -71,6 +72,9 @@ def load_chat() -> pd.DataFrame:
     if "chat_source" not in st.session_state:
         st.session_state["chat_source"] = None
 
+    if DEMO_MODE:
+        st.warning(CLOUD_DISABLED_WARNING)
+
     uploaded_file = st.file_uploader(
         "Upload a WhatsApp .txt export",
         type=["txt"],
@@ -78,8 +82,9 @@ def load_chat() -> pd.DataFrame:
         help="Disabled in demo mode (Streamlit Cloud deployment).",
     )
     if DEMO_MODE:
-        st.info("Parse your own chats is disabled in Streamlit Cloud.")
+        # Defensive: if we're in demo mode, ignore any uploaded file and force sample chat
         uploaded_file = None
+
     col1, _ = st.columns([1, 2])
     with col1:
         if st.button("Try sample chat"):
