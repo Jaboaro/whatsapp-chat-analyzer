@@ -14,4 +14,9 @@ def is_cloud() -> bool:
     bool
         True if running in a cloud environment, False otherwise.
     """
-    return st.secrets.get("IS_CLOUD", False)
+    try:
+        return st.secrets.get("IS_CLOUD", False)
+
+    except st.errors.StreamlitSecretNotFoundError:
+        # If the secret key is not found, assume it's not running in the cloud
+        return False
